@@ -30,7 +30,7 @@ export function ChampionsPage() {
 
   return (
     <section className="space-y-8">
-      <header className="rounded-2xl border border-border/70 bg-card/70 p-4 sm:p-6">
+      <header className="rounded-2xl border border-slate-300/75 bg-card/85 p-4 sm:p-6 dark:border-border/70 dark:bg-card/70">
         <div className="mb-5">
           <h1 className="text-3xl font-semibold tracking-tight text-foreground">Catalogo de Campeones</h1>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -69,7 +69,7 @@ export function ChampionsPage() {
       </header>
 
       {isError ? (
-        <div className="rounded-2xl border border-red-400/40 bg-red-500/10 p-6 text-sm text-red-200">
+        <div className="rounded-2xl border border-red-400/55 bg-red-100/80 p-6 text-sm text-red-700 dark:border-red-400/40 dark:bg-red-500/10 dark:text-red-200">
           No pudimos cargar los campeones. Intenta de nuevo en unos segundos.
         </div>
       ) : null}
