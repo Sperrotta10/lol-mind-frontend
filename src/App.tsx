@@ -5,7 +5,7 @@ import { ChampionsPage } from './pages/Champions.tsx'
 import { HomePage } from './pages/HomePage.tsx'
 import { MatchupPage } from './pages/Matchup.tsx'
 import { RuletaPage } from './pages/RuletaPage.tsx'
-import { TeamBuilderPage } from './pages/TeamBuilderPage.tsx'
+import { TeamBuilderPage } from './pages/TeamBuilder.tsx'
 
 function App() {
   return (
