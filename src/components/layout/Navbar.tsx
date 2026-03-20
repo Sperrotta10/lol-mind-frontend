@@ -9,7 +9,7 @@ const navItems: Array<{ to: string; label: string }> = [
   { to: '/champions', label: 'Campeones' },
   { to: '/tools/matchup', label: 'Matchup' },
   { to: '/tools/team-builder', label: 'Team Builder' },
-  { to: '/tools/ruleta', label: 'Ruleta' },
+  { to: '/tools/roulette', label: 'Ruleta' },
 ]
 
 export function Navbar() {
@@ -40,10 +40,10 @@ export function Navbar() {
               end={item.to === '/'}
               className={({ isActive }) =>
                 [
-                  'rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                  'rounded-md px-3 py-2 text-sm font-medium transition-all duration-200',
                   isActive
                     ? 'bg-accent text-accent-foreground'
-                    : 'text-muted-foreground hover:text-foreground',
+                    : 'text-muted-foreground hover:bg-accent/70 hover:text-foreground hover:-translate-y-0.5',
                 ].join(' ')
               }
             >
@@ -74,10 +74,10 @@ export function Navbar() {
             end={item.to === '/'}
             className={({ isActive }) =>
               [
-                'whitespace-nowrap rounded-full border border-border px-3 py-1.5 text-xs font-medium transition-colors',
+                'whitespace-nowrap rounded-full border border-border px-3 py-1.5 text-xs font-medium transition-all duration-200',
                 isActive
                   ? 'bg-accent text-accent-foreground'
-                  : 'text-muted-foreground hover:text-foreground',
+                  : 'text-muted-foreground hover:border-cyan-400/45 hover:bg-cyan-500/10 hover:text-foreground',
               ].join(' ')
             }
           >
