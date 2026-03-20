@@ -2,7 +2,7 @@ import { Moon, Sun } from 'lucide-react'
 import * as React from 'react'
 import { NavLink } from 'react-router-dom'
 import { useTheme } from 'next-themes'
-import { useMounted } from '../../providers/theme-provider.tsx'
+import { useMounted } from '@/hooks/useMounted'
 
 const navItems: Array<{ to: string; label: string }> = [
   { to: '/', label: 'Inicio' },
