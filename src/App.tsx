@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/layout/Layout.tsx'
 import { ChampionDetailPage } from './pages/ChampionDetailPage.tsx'
-import { ChampionsPage } from './pages/ChampionsPage.tsx'
+import { ChampionsPage } from './pages/Champions.tsx'
 import { HomePage } from './pages/HomePage.tsx'
 import { MatchupPage } from './pages/MatchupPage.tsx'
 import { RuletaPage } from './pages/RuletaPage.tsx'
