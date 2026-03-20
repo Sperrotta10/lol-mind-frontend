@@ -14,8 +14,11 @@ export interface Champion {
   id: string
   name: string
   title: string
+  lore?: string
   tags: string[]
-  imageUrl: string
+  imageUrl?: string
+  avatar?: string
+  splash: string
 }
 
 export interface ChampionsApiResponse {
@@ -26,9 +29,10 @@ export interface ChampionApiModel {
   id: string
   name: string
   title: string
+  lore?: string
+  blurb?: string
   tags?: string[]
-  imageUrl?: string
-  image?: {
-    full?: string
-  }
+  image?: string
+  avatar?: string
+  splash?: string
 }
