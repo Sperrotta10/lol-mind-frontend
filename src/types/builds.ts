@@ -82,3 +82,73 @@ export interface TeamAnalysisApiResponse {
     requestId?: string
   }
 }
+
+export interface StyleBuildRequest {
+  champion: string
+  style: string
+}
+
+export interface StyleBuildResponseData {
+  summary?: string
+  items?: string[]
+  runes?: string[]
+  tips?: string[]
+  [key: string]: unknown
+}
+
+export interface StyleBuildApiResponse {
+  success: boolean
+  data?: StyleBuildResponseData | unknown
+  meta?: {
+    requestId?: string
+  }
+}
+
+export interface ChampionMetaBuildItems {
+  startingItems?: string[]
+  coreItems?: string[]
+  situationalItems?: string[]
+  optionalItems?: string[]
+  boots?: string
+}
+
+export interface ChampionMetaBuildRunes {
+  primaryTree?: string
+  secondaryTree?: string
+  primaryChoices?: string[]
+  secondaryChoices?: string[]
+  shards?: string[]
+}
+
+export interface ChampionMetaBuildSkills {
+  abilityPriority?: string[]
+  levelingOrder?: string[]
+  maxOrder?: string[]
+}
+
+export interface ChampionMetaBuildData {
+  championId?: string
+  championName?: string
+  patch?: string
+  winRate?: number
+  pickRate?: number
+  banRate?: number
+  difficulty?: string
+  playstyle?: string
+  build?: ChampionMetaBuildItems
+  runes?: ChampionMetaBuildRunes
+  skills?: ChampionMetaBuildSkills
+  summonerSpells?: string[]
+  tips?: string[]
+  threats?: string[]
+  synergies?: string[]
+  [key: string]: unknown
+}
+
+export interface ChampionMetaBuildApiResponse {
+  success: boolean
+  data?: ChampionMetaBuildData | unknown
+  meta?: {
+    requestId?: string
+  }
+}

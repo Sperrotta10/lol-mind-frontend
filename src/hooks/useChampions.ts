@@ -26,8 +26,11 @@ function mapChampion(champion: ChampionApiModel): Champion {
     id: champion.id,
     name: champion.name,
     title: champion.title,
+    lore: champion.lore ?? champion.blurb,
     tags: champion.tags ?? [],
-    imageUrl: champion.imageUrl ?? splashImageUrl,
+    imageUrl: champion.image,
+    avatar: champion.avatar,
+    splash: champion.splash ?? splashImageUrl,
   }
 }
 
