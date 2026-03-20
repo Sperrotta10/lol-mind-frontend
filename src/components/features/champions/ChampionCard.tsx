@@ -16,7 +16,7 @@ export function ChampionCard({ champion }: ChampionCardProps) {
             src={champion.imageUrl}
             alt={`Arte de ${champion.name}`}
             loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
           />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
         </div>
