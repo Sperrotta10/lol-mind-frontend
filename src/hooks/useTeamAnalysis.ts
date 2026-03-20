@@ -57,13 +57,14 @@ function normalizeComposition(value: unknown, root: UnknownRecord): TeamAnalysis
   const compositionSource = isRecord(value) ? value : {}
   const fallbackBuild = normalizeRecommendedBuild(root.recommendedBuild)
   const recommendedBuild = normalizeRecommendedBuild(compositionSource.recommendedBuild) ?? fallbackBuild
+  const explanation = toOptionalString(compositionSource.explanation) ?? toOptionalString(root.explanation)
 
   const composition: TeamAnalysisComposition = {
     globalWinCondition: toOptionalString(compositionSource.globalWinCondition),
     myTeamDamageProfile: toOptionalString(compositionSource.myTeamDamageProfile),
     enemyTeamDamageProfile: toOptionalString(compositionSource.enemyTeamDamageProfile),
     ccAdvantage: toOptionalString(compositionSource.ccAdvantage),
-    explanation: toOptionalString(compositionSource.explanation),
+    explanation,
     recommendedBuild,
   }
 
@@ -83,6 +84,7 @@ function normalizeTeamAnalysisData(raw: unknown): TeamAnalysisResponseData {
   const payload = nestedData ?? raw
 
   return {
+    explanation: toOptionalString(payload.explanation),
     composition: normalizeComposition(payload.composition, payload),
   }
 }

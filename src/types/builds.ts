@@ -72,6 +72,7 @@ export interface TeamAnalysisComposition {
 
 export interface TeamAnalysisResponseData {
   composition?: TeamAnalysisComposition
+  explanation?: string
 }
 
 export interface TeamAnalysisApiResponse {

@@ -11,6 +11,7 @@ interface TeamAnalysisResultProps {
 export function TeamAnalysisResult({ data }: TeamAnalysisResultProps) {
   const composition = data.composition
   const recommendedBuild = composition?.recommendedBuild
+  const explanation = composition?.explanation ?? data.explanation
   const [activeTab, setActiveTab] = useState('build')
 
   return (
@@ -20,9 +21,9 @@ export function TeamAnalysisResult({ data }: TeamAnalysisResultProps) {
         {composition?.globalWinCondition ? (
           <p className="text-sm text-muted-foreground">{composition.globalWinCondition}</p>
         ) : null}
-        {composition?.explanation ? (
+        {explanation ? (
           <p className="text-sm text-cyan-700 dark:text-cyan-200">
-            <span className="font-medium">Enfoque para tu campeon:</span> {composition.explanation}
+            <span className="font-medium">Enfoque para tu campeon:</span> {explanation}
           </p>
         ) : null}
       </header>
@@ -41,6 +42,13 @@ export function TeamAnalysisResult({ data }: TeamAnalysisResultProps) {
                 <CardTitle className="text-base">Items para tu campeon</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
+                {explanation ? (
+                  <p className="rounded-md border border-violet-300/55 bg-violet-500/8 px-3 py-2 text-sm text-foreground/90 dark:border-violet-300/20 dark:bg-violet-500/5">
+                    <span className="font-medium text-violet-700 dark:text-violet-300">Explicacion del pick/build:</span>{' '}
+                    {explanation}
+                  </p>
+                ) : null}
+
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-cyan-700 dark:text-cyan-200">Core</p>
                   {recommendedBuild?.coreItems?.length ? (
@@ -123,10 +131,10 @@ export function TeamAnalysisResult({ data }: TeamAnalysisResultProps) {
                   </p>
                 ) : null}
 
-                {composition?.explanation ? (
+                {explanation ? (
                   <p className="rounded-md border border-violet-300/55 bg-violet-500/8 px-3 py-2 text-sm text-foreground/90 dark:border-violet-300/20 dark:bg-violet-500/5">
                     <span className="font-medium text-violet-700 dark:text-violet-300">Explicacion del pick/build:</span>{' '}
-                    {composition.explanation}
+                    {explanation}
                   </p>
                 ) : null}
               </CardContent>
