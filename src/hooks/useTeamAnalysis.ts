@@ -1,9 +1,91 @@
 import { useCallback, useRef, useState } from 'react'
 import type {
   TeamAnalysisApiResponse,
+  TeamAnalysisComposition,
   TeamAnalysisRequest,
+  TeamAnalysisRecommendedBuild,
   TeamAnalysisResponseData,
 } from '@/types/builds'
+
+type UnknownRecord = Record<string, unknown>
+
+function isRecord(value: unknown): value is UnknownRecord {
+  return typeof value === 'object' && value !== null
+}
+
+function toStringArray(value: unknown): string[] | undefined {
+  if (Array.isArray(value)) {
+    const parsed = value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+    return parsed.length > 0 ? parsed : undefined
+  }
+
+  if (isRecord(value)) {
+    const parsed = Object.values(value).filter(
+      (item): item is string => typeof item === 'string' && item.trim().length > 0,
+    )
+    return parsed.length > 0 ? parsed : undefined
+  }
+
+  return undefined
+}
+
+function toOptionalString(value: unknown): string | undefined {
+  return typeof value === 'string' && value.trim().length > 0 ? value : undefined
+}
+
+function normalizeRecommendedBuild(value: unknown): TeamAnalysisRecommendedBuild | undefined {
+  if (!isRecord(value)) {
+    return undefined
+  }
+
+  const coreItems = toStringArray(value.coreItems)
+  const situationalItems = toStringArray(value.situationalItems)
+  const boots = toOptionalString(value.boots)
+
+  if (!coreItems && !situationalItems && !boots) {
+    return undefined
+  }
+
+  return {
+    coreItems,
+    situationalItems,
+    boots,
+  }
+}
+
+function normalizeComposition(value: unknown, root: UnknownRecord): TeamAnalysisComposition | undefined {
+  const compositionSource = isRecord(value) ? value : {}
+  const fallbackBuild = normalizeRecommendedBuild(root.recommendedBuild)
+  const recommendedBuild = normalizeRecommendedBuild(compositionSource.recommendedBuild) ?? fallbackBuild
+
+  const composition: TeamAnalysisComposition = {
+    globalWinCondition: toOptionalString(compositionSource.globalWinCondition),
+    myTeamDamageProfile: toOptionalString(compositionSource.myTeamDamageProfile),
+    enemyTeamDamageProfile: toOptionalString(compositionSource.enemyTeamDamageProfile),
+    ccAdvantage: toOptionalString(compositionSource.ccAdvantage),
+    explanation: toOptionalString(compositionSource.explanation),
+    recommendedBuild,
+  }
+
+  if (Object.values(composition).every((item) => item === undefined)) {
+    return undefined
+  }
+
+  return composition
+}
+
+function normalizeTeamAnalysisData(raw: unknown): TeamAnalysisResponseData {
+  if (!isRecord(raw)) {
+    return {}
+  }
+
+  const nestedData = isRecord(raw.data) ? raw.data : undefined
+  const payload = nestedData ?? raw
+
+  return {
+    composition: normalizeComposition(payload.composition, payload),
+  }
+}
 
 interface UseTeamAnalysisResult {
   data: TeamAnalysisResponseData | null
@@ -62,7 +144,7 @@ export function useTeamAnalysis(): UseTeamAnalysisResult {
         return
       }
 
-      setData(result.data)
+      setData(normalizeTeamAnalysisData(result.data))
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') {
         return
