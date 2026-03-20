@@ -1,251 +1,146 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { TeamAnalysisResponseData } from '@/types/builds'
+import { useState } from 'react'
 
 interface TeamAnalysisResultProps {
   data: TeamAnalysisResponseData
 }
 
 export function TeamAnalysisResult({ data }: TeamAnalysisResultProps) {
-  const build = data.build
-  const macro = data.macro
-  const teamfight = data.teamfight
+  const composition = data.composition
+  const recommendedBuild = composition?.recommendedBuild
+  const [activeTab, setActiveTab] = useState('build')
 
   return (
-    <section className="space-y-4 rounded-2xl border border-border/70 bg-card/70 p-4 sm:p-6">
+    <section className="space-y-4 rounded-2xl border border-slate-300/75 bg-card/85 p-4 sm:p-6 dark:border-border/70 dark:bg-card/70">
       <header className="space-y-2">
         <h2 className="text-2xl font-semibold tracking-tight text-foreground">Analisis Tactico 5v5</h2>
-        {data.compositionSummary ? (
-          <p className="text-sm text-muted-foreground">{data.compositionSummary}</p>
+        {composition?.globalWinCondition ? (
+          <p className="text-sm text-muted-foreground">{composition.globalWinCondition}</p>
         ) : null}
-        {data.winCondition ? (
-          <p className="text-sm text-cyan-200">
-            <span className="font-medium">Win condition:</span> {data.winCondition}
+        {composition?.explanation ? (
+          <p className="text-sm text-cyan-700 dark:text-cyan-200">
+            <span className="font-medium">Enfoque para tu campeon:</span> {composition.explanation}
           </p>
         ) : null}
       </header>
 
-      <Tabs defaultValue="build" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3 bg-background/70">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col gap-4">
+        <TabsList className="grid h-auto w-full grid-cols-3 bg-background/70">
           <TabsTrigger value="build">Build</TabsTrigger>
-          <TabsTrigger value="macro">Macroestrategia</TabsTrigger>
-          <TabsTrigger value="teamfight">Teamfight</TabsTrigger>
+          <TabsTrigger value="composition">Composicion</TabsTrigger>
+          <TabsTrigger value="insights">Insights</TabsTrigger>
         </TabsList>
 
         <TabsContent value="build" className="space-y-4">
-          <div className="grid gap-4 lg:grid-cols-2">
-            <Card className="border-cyan-300/20 bg-background/70">
+          <div className="grid gap-4 lg:grid-cols-1">
+            <Card className="border-cyan-300/55 bg-background/80 dark:border-cyan-300/20 dark:bg-background/70">
               <CardHeader>
                 <CardTitle className="text-base">Items para tu campeon</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-cyan-200">Inicio</p>
-                  <div className="flex flex-wrap gap-2">
-                    {build?.startingItems?.map((item) => (
-                      <Badge key={`start-${item}`} variant="outline" className="border-cyan-300/40 bg-cyan-500/10 text-cyan-200">
-                        {item}
-                      </Badge>
-                    ))}
-                  </div>
+                  <p className="text-sm font-medium text-cyan-700 dark:text-cyan-200">Core</p>
+                  {recommendedBuild?.coreItems?.length ? (
+                    <div className="flex flex-wrap gap-2">
+                      {recommendedBuild.coreItems.map((item) => (
+                        <Badge key={`core-${item}`} variant="outline" className="border-sky-300/55 bg-sky-500/10 text-sky-700 dark:border-sky-300/40 dark:text-sky-200">
+                          {item}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Sin items core en la respuesta.</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-cyan-200">Core</p>
-                  <div className="flex flex-wrap gap-2">
-                    {build?.coreItems?.map((item) => (
-                      <Badge key={`core-${item}`} variant="outline" className="border-sky-300/40 bg-sky-500/10 text-sky-200">
-                        {item}
-                      </Badge>
-                    ))}
-                  </div>
+                  <p className="text-sm font-medium text-cyan-700 dark:text-cyan-200">Situacionales</p>
+                  {recommendedBuild?.situationalItems?.length ? (
+                    <div className="flex flex-wrap gap-2">
+                      {recommendedBuild.situationalItems.map((item) => (
+                        <Badge key={`situ-${item}`} variant="secondary">{item}</Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Sin items situacionales en la respuesta.</p>
+                  )}
                 </div>
 
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-cyan-200">Situacionales</p>
-                  <div className="flex flex-wrap gap-2">
-                    {build?.situationalItems?.map((item) => (
-                      <Badge key={`situ-${item}`} variant="secondary">{item}</Badge>
-                    ))}
-                  </div>
-                </div>
-
-                {build?.boots ? (
+                {recommendedBuild?.boots ? (
                   <p className="text-sm text-foreground/90">
-                    <span className="font-medium text-cyan-300">Botas:</span> {build.boots}
+                    <span className="font-medium text-cyan-700 dark:text-cyan-300">Botas:</span> {recommendedBuild.boots}
                   </p>
-                ) : null}
-              </CardContent>
-            </Card>
-
-            <Card className="border-cyan-300/20 bg-background/70">
-              <CardHeader>
-                <CardTitle className="text-base">Runas sugeridas</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {build?.runes?.primaryTree ? (
-                  <p className="text-sm text-foreground/90">
-                    <span className="font-medium text-cyan-300">Primario:</span> {build.runes.primaryTree}
-                  </p>
-                ) : null}
-                <div className="flex flex-wrap gap-2">
-                  {build?.runes?.primaryChoices?.map((rune) => (
-                    <Badge key={`pri-${rune}`} variant="outline" className="border-fuchsia-300/40 bg-fuchsia-500/10 text-fuchsia-200">
-                      {rune}
-                    </Badge>
-                  ))}
-                </div>
-
-                {build?.runes?.secondaryTree ? (
-                  <p className="text-sm text-foreground/90">
-                    <span className="font-medium text-cyan-300">Secundario:</span> {build.runes.secondaryTree}
-                  </p>
-                ) : null}
-                <div className="flex flex-wrap gap-2">
-                  {build?.runes?.secondaryChoices?.map((rune) => (
-                    <Badge key={`sec-${rune}`} variant="secondary">{rune}</Badge>
-                  ))}
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {build?.runes?.shards?.map((shard) => (
-                    <Badge key={`sha-${shard}`} variant="outline">{shard}</Badge>
-                  ))}
-                </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Sin recomendacion de botas.</p>
+                )}
               </CardContent>
             </Card>
           </div>
         </TabsContent>
 
-        <TabsContent value="macro">
-          <Card className="border-cyan-300/20 bg-background/70">
+        <TabsContent value="composition">
+          <Card className="border-cyan-300/55 bg-background/80 dark:border-cyan-300/20 dark:bg-background/70">
             <CardHeader>
-              <CardTitle className="text-base">Plan macro por fases</CardTitle>
+              <CardTitle className="text-base">Lectura de composiciones</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {macro?.globalStrategy ? (
+              {composition?.myTeamDamageProfile ? (
                 <p className="rounded-md border border-border/60 bg-card/50 px-3 py-2 text-sm text-foreground/90">
-                  {macro.globalStrategy}
+                  <span className="font-medium text-cyan-700 dark:text-cyan-300">Perfil de dano (mi equipo):</span>{' '}
+                  {composition.myTeamDamageProfile}
                 </p>
               ) : null}
 
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="early">
-                  <AccordionTrigger>Early Game</AccordionTrigger>
-                  <AccordionContent>
-                    <ul className="space-y-2">
-                      {macro?.earlyGamePlan?.map((tip) => (
-                        <li key={`macro-early-${tip}`} className="text-sm text-foreground/90">• {tip}</li>
-                      ))}
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
+              {composition?.enemyTeamDamageProfile ? (
+                <p className="rounded-md border border-border/60 bg-card/50 px-3 py-2 text-sm text-foreground/90">
+                  <span className="font-medium text-rose-700 dark:text-rose-300">Perfil de dano (enemigo):</span>{' '}
+                  {composition.enemyTeamDamageProfile}
+                </p>
+              ) : null}
 
-                <AccordionItem value="mid">
-                  <AccordionTrigger>Mid Game</AccordionTrigger>
-                  <AccordionContent>
-                    <ul className="space-y-2">
-                      {macro?.midGamePlan?.map((tip) => (
-                        <li key={`macro-mid-${tip}`} className="text-sm text-foreground/90">• {tip}</li>
-                      ))}
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="late">
-                  <AccordionTrigger>Late Game</AccordionTrigger>
-                  <AccordionContent>
-                    <ul className="space-y-2">
-                      {macro?.lateGamePlan?.map((tip) => (
-                        <li key={`macro-late-${tip}`} className="text-sm text-foreground/90">• {tip}</li>
-                      ))}
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-
-              {macro?.objectivePriority?.length ? (
-                <div>
-                  <p className="mb-2 text-sm font-medium text-cyan-300">Prioridad de objetivos</p>
-                  <div className="flex flex-wrap gap-2">
-                    {macro.objectivePriority.map((objective) => (
-                      <Badge key={objective} variant="outline">{objective}</Badge>
-                    ))}
-                  </div>
-                </div>
+              {composition?.ccAdvantage ? (
+                <p className="rounded-md border border-amber-300/55 bg-amber-100/70 px-3 py-2 text-sm text-amber-800 dark:border-amber-300/30 dark:bg-amber-500/10 dark:text-amber-100">
+                  <span className="font-medium">Ventaja de CC:</span> {composition.ccAdvantage}
+                </p>
               ) : null}
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="teamfight">
-          <Card className="border-cyan-300/20 bg-background/70">
-            <CardHeader>
-              <CardTitle className="text-base">Foco en Teamfight</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {teamfight?.roleInTeamfight ? (
-                <p className="text-sm text-foreground/90">
-                  <span className="font-medium text-cyan-300">Tu rol:</span> {teamfight.roleInTeamfight}
-                </p>
-              ) : null}
+        <TabsContent value="insights">
+          <Card className="border-cyan-300/55 bg-background/80 dark:border-cyan-300/20 dark:bg-background/70">
+              <CardHeader>
+                <CardTitle className="text-base">Insights tacticos</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {composition?.globalWinCondition ? (
+                  <p className="rounded-md border border-cyan-300/55 bg-cyan-500/8 px-3 py-2 text-sm text-foreground/90 dark:border-cyan-300/20 dark:bg-cyan-500/5">
+                    <span className="font-medium text-cyan-700 dark:text-cyan-300">Win condition global:</span>{' '}
+                    {composition.globalWinCondition}
+                  </p>
+                ) : null}
 
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="target-priority">
-                  <AccordionTrigger>Target Priority</AccordionTrigger>
-                  <AccordionContent>
-                    <ul className="space-y-2">
-                      {teamfight?.targetPriority?.map((tip) => (
-                        <li key={`tf-target-${tip}`} className="text-sm text-foreground/90">• {tip}</li>
-                      ))}
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="engage-pattern">
-                  <AccordionTrigger>Patron de engage</AccordionTrigger>
-                  <AccordionContent>
-                    <ul className="space-y-2">
-                      {teamfight?.engagePattern?.map((tip) => (
-                        <li key={`tf-engage-${tip}`} className="text-sm text-foreground/90">• {tip}</li>
-                      ))}
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem value="positioning">
-                  <AccordionTrigger>Posicionamiento</AccordionTrigger>
-                  <AccordionContent>
-                    <ul className="space-y-2">
-                      {teamfight?.positioningTips?.map((tip) => (
-                        <li key={`tf-pos-${tip}`} className="text-sm text-foreground/90">• {tip}</li>
-                      ))}
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-
-              {teamfight?.dangerAlerts?.length ? (
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-red-300">Alertas de riesgo</p>
-                  {teamfight.dangerAlerts.map((alert) => (
-                    <p key={alert} className="rounded-md border border-red-400/30 bg-red-500/10 px-3 py-2 text-sm text-red-200">
-                      {alert}
-                    </p>
-                  ))}
-                </div>
-              ) : null}
-            </CardContent>
-          </Card>
+                {composition?.explanation ? (
+                  <p className="rounded-md border border-violet-300/55 bg-violet-500/8 px-3 py-2 text-sm text-foreground/90 dark:border-violet-300/20 dark:bg-violet-500/5">
+                    <span className="font-medium text-violet-700 dark:text-violet-300">Explicacion del pick/build:</span>{' '}
+                    {composition.explanation}
+                  </p>
+                ) : null}
+              </CardContent>
+            </Card>
         </TabsContent>
       </Tabs>
+
+      {!composition ? (
+        <Card className="border-amber-300/60 bg-amber-100/70 dark:border-amber-300/30 dark:bg-amber-500/10">
+          <CardContent className="p-4 text-sm text-amber-800 dark:text-amber-100">
+            El backend no devolvio el bloque composition en la respuesta.
+          </CardContent>
+        </Card>
+      ) : null}
     </section>
   )
 }

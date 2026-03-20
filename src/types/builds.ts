@@ -55,45 +55,23 @@ export interface TeamAnalysisRequest {
   myChampion: string
 }
 
-export interface TeamAnalysisBuild {
-  startingItems?: string[]
+export interface TeamAnalysisRecommendedBuild {
   coreItems?: string[]
   situationalItems?: string[]
   boots?: string
-  runes?: {
-    primaryTree?: string
-    secondaryTree?: string
-    primaryChoices?: string[]
-    secondaryChoices?: string[]
-    shards?: string[]
-  }
 }
 
-export interface TeamAnalysisMacro {
-  globalStrategy?: string
-  earlyGamePlan?: string[]
-  midGamePlan?: string[]
-  lateGamePlan?: string[]
-  objectivePriority?: string[]
-}
-
-export interface TeamAnalysisTeamfight {
-  roleInTeamfight?: string
-  targetPriority?: string[]
-  engagePattern?: string[]
-  positioningTips?: string[]
-  dangerAlerts?: string[]
+export interface TeamAnalysisComposition {
+  globalWinCondition?: string
+  myTeamDamageProfile?: string
+  enemyTeamDamageProfile?: string
+  ccAdvantage?: string
+  explanation?: string
+  recommendedBuild?: TeamAnalysisRecommendedBuild
 }
 
 export interface TeamAnalysisResponseData {
-  myTeam: string[]
-  enemyTeam: string[]
-  myChampion: string
-  compositionSummary?: string
-  winCondition?: string
-  build?: TeamAnalysisBuild
-  macro?: TeamAnalysisMacro
-  teamfight?: TeamAnalysisTeamfight
+  composition?: TeamAnalysisComposition
 }
 
 export interface TeamAnalysisApiResponse {

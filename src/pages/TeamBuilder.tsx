@@ -49,9 +49,14 @@ export function TeamBuilderPage() {
     [champions],
   )
 
+  const effectiveMyChampion = useMemo(
+    () => myChampion ?? myTeam.find((championId): championId is string => Boolean(championId)) ?? null,
+    [myChampion, myTeam],
+  )
+
   const isMyTeamComplete = myTeam.every((championId) => Boolean(championId))
   const isEnemyTeamComplete = enemyTeam.every((championId) => Boolean(championId))
-  const canAnalyze = isMyTeamComplete && isEnemyTeamComplete && Boolean(myChampion)
+  const canAnalyze = isMyTeamComplete && isEnemyTeamComplete && Boolean(effectiveMyChampion)
 
   const handleMyTeamChange = (slotIndex: number, championId: string | null) => {
     setMyTeam((current) => {
@@ -74,7 +79,7 @@ export function TeamBuilderPage() {
   }
 
   const handleAnalyze = async () => {
-    if (!canAnalyze || !myChampion) {
+    if (!canAnalyze || !effectiveMyChampion) {
       return
     }
 
@@ -86,7 +91,7 @@ export function TeamBuilderPage() {
     await analyzeTeam({
       myTeam: myTeamPayload,
       enemyTeam: enemyTeamPayload,
-      myChampion,
+      myChampion: effectiveMyChampion,
     })
   }
 
@@ -109,7 +114,7 @@ export function TeamBuilderPage() {
         champions={sortedChampions}
         myTeam={myTeam}
         enemyTeam={enemyTeam}
-        myChampion={myChampion}
+        myChampion={effectiveMyChampion}
         onMyTeamChange={handleMyTeamChange}
         onEnemyTeamChange={handleEnemyTeamChange}
         onMyChampionChange={setMyChampion}
@@ -140,7 +145,7 @@ export function TeamBuilderPage() {
       {!isAnalyzing && !canAnalyze ? (
         <Card className="border-amber-300/60 bg-amber-100/70 dark:border-amber-300/30 dark:bg-amber-500/10">
           <CardContent className="p-4 text-sm text-amber-800 dark:text-amber-100">
-            Completa los 10 slots y marca tu campeon en Blue Side para iniciar el analisis.
+            Completa los 10 slots para iniciar el analisis. Tu campeon se toma del Blue Side y puedes ajustarlo con el boton Tu.
           </CardContent>
         </Card>
       ) : null}

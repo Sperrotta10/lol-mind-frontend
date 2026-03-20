@@ -64,18 +64,22 @@ function TeamSlotSelector({
       <div className="mb-2 flex items-center justify-between gap-2">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-600 dark:text-slate-300">{label}</p>
 
-        {onSetMyChampion ? (
-          <Button
-            type="button"
-            size="xs"
-            variant={isMyChampion ? 'default' : 'outline'}
-            onClick={onSetMyChampion}
-            disabled={!value || disabled}
-            className="h-6 px-2"
-          >
-            Tu
-          </Button>
-        ) : null}
+        <div className="flex h-6 w-10 items-center justify-end">
+          {onSetMyChampion ? (
+            <Button
+              type="button"
+              size="xs"
+              variant={isMyChampion ? 'default' : 'outline'}
+              onClick={onSetMyChampion}
+              disabled={!value || disabled}
+              className="h-6 w-10 px-0"
+            >
+              Tu
+            </Button>
+          ) : (
+            <span className="h-6 w-10" aria-hidden="true" />
+          )}
+        </div>
       </div>
 
       <Popover open={open} onOpenChange={setOpen}>
