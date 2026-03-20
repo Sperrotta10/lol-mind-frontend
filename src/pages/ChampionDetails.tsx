@@ -1,13 +1,21 @@
 import { ChampionDetailSkeleton } from '@/components/features/champions/ChampionDetailSkeleton'
 import { ChampionDetailView } from '@/components/features/champions/ChampionDetailView'
+import { MetaBuildPanel } from '@/components/features/champions/MetaBuildPanel'
 import { Button } from '@/components/ui/button'
 import { useChampionDetail } from '@/hooks/useChampionDetail'
+import { useChampionMetaBuild } from '@/hooks/useChampionMetaBuild'
 import { ChevronLeft } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 
-export function ChampionDetailPage() {
+export function ChampionDetailsPage() {
   const { id } = useParams<{ id: string }>()
   const { champion, isLoading, isError } = useChampionDetail(id)
+  const {
+    data: metaBuild,
+    isLoading: isLoadingMetaBuild,
+    isError: isErrorMetaBuild,
+    refetch: refetchMetaBuild,
+  } = useChampionMetaBuild(id)
 
   if (isLoading) {
     return <ChampionDetailSkeleton />
@@ -42,5 +50,26 @@ export function ChampionDetailPage() {
     )
   }
 
-  return <ChampionDetailView champion={champion} />
+  return (
+    <section className="space-y-6">
+      <Button asChild variant="outline" size="sm">
+        <Link to="/champions" className="inline-flex items-center gap-1">
+          <ChevronLeft className="size-4" />
+          Volver al catalogo
+        </Link>
+      </Button>
+
+      <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+        <ChampionDetailView champion={champion} />
+        <MetaBuildPanel
+          data={metaBuild}
+          isLoading={isLoadingMetaBuild}
+          isError={isErrorMetaBuild}
+          onRetry={() => {
+            void refetchMetaBuild()
+          }}
+        />
+      </div>
+    </section>
+  )
 }
