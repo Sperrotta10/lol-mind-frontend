@@ -26,6 +26,11 @@ function asStringArray(value: unknown): string[] {
   return value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
 }
 
+function collectStringArrays(...values: unknown[]): string[] {
+  const collected = values.flatMap((value) => asStringArray(value))
+  return Array.from(new Set(collected))
+}
+
 function asRecord(value: unknown): Record<string, unknown> | null {
   return typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : null
 }
@@ -114,24 +119,33 @@ export function ChampionRouletteBoard({
     void generateStyleBuild(winner.id)
   }
 
-  const styleRunesRecord = asRecord(styleBuild?.runes)
-  const styleSkillsRecord = asRecord(styleBuild?.skills)
-  const styleItems =
-    asStringArray(styleBuild?.items) ||
-    asStringArray(styleBuild?.coreItems) ||
-    asStringArray(asRecord(styleBuild?.build)?.coreItems)
-  const styleRunes =
-    asStringArray(styleBuild?.runes) ||
-    asStringArray(styleRunesRecord?.primaryChoices) ||
-    asStringArray(styleRunesRecord?.secondaryChoices)
-  const styleTips = asStringArray(styleBuild?.tips)
-  const styleSkills =
-    asStringArray(styleBuild?.skillOrder) ||
-    asStringArray(styleSkillsRecord?.abilityPriority) ||
-    asStringArray(styleSkillsRecord?.levelingOrder)
-  const styleSummary = typeof styleBuild?.summary === 'string' ? styleBuild.summary : null
+  const styleBuildRecord = asRecord(styleBuild)
+  const styleBuildNestedRecord = asRecord(styleBuildRecord?.build)
+  const styleRunesRecord = asRecord(styleBuildRecord?.runes)
+  const styleSkillsRecord = asRecord(styleBuildRecord?.skills)
+
+  const styleItems = collectStringArrays(
+    styleBuildRecord?.items,
+    styleBuildRecord?.coreItems,
+    styleBuildRecord?.situationalItems,
+    styleBuildNestedRecord?.coreItems,
+    styleBuildNestedRecord?.situationalItems,
+  )
+  const styleRunes = collectStringArrays(
+    styleBuildRecord?.runes,
+    styleRunesRecord?.primaryChoices,
+    styleRunesRecord?.secondaryChoices,
+    styleRunesRecord?.shards,
+  )
+  const styleTips = asStringArray(styleBuildRecord?.tips)
+  const styleSkills = collectStringArrays(
+    styleBuildRecord?.skillOrder,
+    styleSkillsRecord?.abilityPriority,
+    styleSkillsRecord?.levelingOrder,
+  )
+  const styleSummary = typeof styleBuildRecord?.summary === 'string' ? styleBuildRecord.summary : null
   const playstyleExplanation =
-    typeof styleBuild?.playstyleExplanation === 'string' ? styleBuild.playstyleExplanation : null
+    typeof styleBuildRecord?.playstyleExplanation === 'string' ? styleBuildRecord.playstyleExplanation : null
 
   return (
     <div className="space-y-6">
