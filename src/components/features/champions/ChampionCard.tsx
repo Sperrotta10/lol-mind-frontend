@@ -10,8 +10,8 @@ interface ChampionCardProps {
 export function ChampionCard({ champion }: ChampionCardProps) {
   return (
     <Link to={`/champions/${champion.id}`} className="group block focus:outline-none">
-      <Card className="h-full overflow-hidden border-border/70 bg-card/80 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/60 hover:shadow-[0_0_24px_-8px_rgba(34,211,238,0.6)] focus-visible:ring-2 focus-visible:ring-cyan-400/70">
-        <div className="relative aspect-[4/5] overflow-hidden border-b border-border/60">
+      <Card className="h-full overflow-hidden border-slate-300/70 bg-card/90 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/60 hover:shadow-[0_0_24px_-8px_rgba(14,165,233,0.55)] focus-visible:ring-2 focus-visible:ring-cyan-500/70 dark:border-border/70 dark:bg-card/80 dark:hover:border-cyan-300/60 dark:hover:shadow-[0_0_24px_-8px_rgba(34,211,238,0.6)] dark:focus-visible:ring-cyan-400/70">
+        <div className="relative aspect-[4/5] overflow-hidden border-b border-slate-300/70 dark:border-border/60">
           <img
             src={champion.imageUrl}
             alt={`Arte de ${champion.name}`}
@@ -32,7 +32,7 @@ export function ChampionCard({ champion }: ChampionCardProps) {
               <Badge
                 key={`${champion.id}-${tag}`}
                 variant="outline"
-                className="border-cyan-300/30 bg-cyan-500/10 text-[11px] tracking-wide text-cyan-200"
+                className="border-cyan-300/55 bg-cyan-500/10 text-[11px] tracking-wide text-cyan-700 dark:border-cyan-300/30 dark:text-cyan-200"
               >
                 {tag}
               </Badge>

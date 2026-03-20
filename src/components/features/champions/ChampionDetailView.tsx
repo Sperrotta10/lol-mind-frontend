@@ -19,7 +19,7 @@ export function ChampionDetailView({ champion }: ChampionDetailViewProps) {
         </Link>
       </Button>
 
-      <Card className="overflow-hidden border-border/70 bg-card/80">
+      <Card className="overflow-hidden border-slate-300/75 bg-card/90 dark:border-border/70 dark:bg-card/80">
         <div className="grid gap-0 lg:grid-cols-[1.2fr_1fr]">
           <div className="relative min-h-[320px] border-b border-border/60 lg:min-h-[560px] lg:border-b-0 lg:border-r">
             <img
@@ -32,7 +32,7 @@ export function ChampionDetailView({ champion }: ChampionDetailViewProps) {
 
           <CardContent className="flex flex-col justify-between gap-8 p-6 sm:p-8">
             <div className="space-y-3">
-              <p className="text-xs uppercase tracking-[0.3em] text-cyan-400/80">League of Legends</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-cyan-700 dark:text-cyan-300/85">League of Legends</p>
               <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
                 {champion.name}
               </h1>
@@ -48,7 +48,7 @@ export function ChampionDetailView({ champion }: ChampionDetailViewProps) {
                   <Badge
                     key={`${champion.id}-${tag}`}
                     variant="outline"
-                    className="border-cyan-300/35 bg-cyan-500/10 text-cyan-200"
+                    className="border-cyan-300/55 bg-cyan-500/10 text-cyan-700 dark:border-cyan-300/35 dark:text-cyan-200"
                   >
                     {tag}
                   </Badge>

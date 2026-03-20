@@ -92,7 +92,7 @@ export function MatchupResult({ data }: MatchupResultProps) {
   ]
 
   return (
-    <section className="space-y-4 rounded-2xl border border-border/70 bg-card/70 p-4 sm:p-6">
+    <section className="space-y-4 rounded-2xl border border-slate-300/75 bg-card/85 p-4 sm:p-6 dark:border-border/70 dark:bg-card/70">
       <header className="space-y-2">
         <h2 className="text-2xl font-semibold tracking-tight text-foreground">Resultado Tactico</h2>
         <p className="text-sm text-muted-foreground">
@@ -101,17 +101,17 @@ export function MatchupResult({ data }: MatchupResultProps) {
       </header>
 
       <div className="grid gap-4 xl:grid-cols-3">
-        <Card className="border-cyan-300/20 bg-background/70">
+        <Card className="border-cyan-300/55 bg-background/80 dark:border-cyan-300/20 dark:bg-background/70">
           <CardHeader>
             <CardTitle className="text-base">Build Recomendada</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <p className="text-sm font-medium text-cyan-200">Inicio</p>
+              <p className="text-sm font-medium text-cyan-700 dark:text-cyan-200">Inicio</p>
               {build.startingItems.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
                   {build.startingItems.map((item) => (
-                    <Badge key={`start-${item}`} variant="outline" className="border-cyan-300/40 bg-cyan-500/10 text-cyan-200">
+                    <Badge key={`start-${item}`} variant="outline" className="border-cyan-300/55 bg-cyan-500/10 text-cyan-700 dark:border-cyan-300/40 dark:text-cyan-200">
                       {item}
                     </Badge>
                   ))}
@@ -122,10 +122,10 @@ export function MatchupResult({ data }: MatchupResultProps) {
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium text-cyan-200">Core</p>
+              <p className="text-sm font-medium text-cyan-700 dark:text-cyan-200">Core</p>
               <div className="flex flex-wrap gap-2">
                 {build.coreItems.map((item) => (
-                  <Badge key={`core-${item}`} variant="outline" className="border-sky-300/40 bg-sky-500/10 text-sky-200">
+                  <Badge key={`core-${item}`} variant="outline" className="border-sky-300/55 bg-sky-500/10 text-sky-700 dark:border-sky-300/40 dark:text-sky-200">
                     {item}
                   </Badge>
                 ))}
@@ -134,7 +134,7 @@ export function MatchupResult({ data }: MatchupResultProps) {
 
             {build.situationalItems.length > 0 ? (
               <div className="space-y-2">
-                <p className="text-sm font-medium text-cyan-200">Situacionales</p>
+                <p className="text-sm font-medium text-cyan-700 dark:text-cyan-200">Situacionales</p>
                 <div className="flex flex-wrap gap-2">
                   {build.situationalItems.map((item) => (
                     <Badge key={`situ-${item}`} variant="secondary">{item}</Badge>
@@ -145,13 +145,13 @@ export function MatchupResult({ data }: MatchupResultProps) {
 
             {build.boots ? (
               <p className="text-sm text-foreground/90">
-                <span className="font-medium text-cyan-300">Botas:</span> {build.boots}
+                <span className="font-medium text-cyan-700 dark:text-cyan-300">Botas:</span> {build.boots}
               </p>
             ) : null}
           </CardContent>
         </Card>
 
-        <Card className="border-cyan-300/20 bg-background/70">
+        <Card className="border-cyan-300/55 bg-background/80 dark:border-cyan-300/20 dark:bg-background/70">
           <CardHeader>
             <CardTitle className="text-base">Runas Recomendadas</CardTitle>
           </CardHeader>
@@ -161,7 +161,7 @@ export function MatchupResult({ data }: MatchupResultProps) {
               {runes.primaryChoices.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
                   {runes.primaryChoices.map((rune) => (
-                    <Badge key={`primary-${rune}`} variant="outline" className="border-fuchsia-300/40 bg-fuchsia-500/10 text-fuchsia-200">{rune}</Badge>
+                    <Badge key={`primary-${rune}`} variant="outline" className="border-fuchsia-300/55 bg-fuchsia-500/10 text-fuchsia-700 dark:border-fuchsia-300/40 dark:text-fuchsia-200">{rune}</Badge>
                   ))}
                 </div>
               ) : (
@@ -180,13 +180,13 @@ export function MatchupResult({ data }: MatchupResultProps) {
 
             {runes.shards.length > 0 ? (
               <p className="text-sm text-foreground/90">
-                <span className="font-medium text-cyan-300">Shards:</span> {runes.shards.join(' · ')}
+                <span className="font-medium text-cyan-700 dark:text-cyan-300">Shards:</span> {runes.shards.join(' · ')}
               </p>
             ) : null}
           </CardContent>
         </Card>
 
-        <Card className="border-cyan-300/20 bg-background/70">
+        <Card className="border-cyan-300/55 bg-background/80 dark:border-cyan-300/20 dark:bg-background/70">
           <CardHeader>
             <CardTitle className="text-base">Riesgo por Fase</CardTitle>
           </CardHeader>
@@ -211,10 +211,10 @@ export function MatchupResult({ data }: MatchupResultProps) {
 
             {matchup.riskAlerts.length > 0 ? (
               <div className="space-y-2 pt-1">
-                <p className="text-sm font-medium text-red-300">Alertas de riesgo</p>
+                <p className="text-sm font-medium text-red-700 dark:text-red-300">Alertas de riesgo</p>
                 <ul className="space-y-2">
                   {matchup.riskAlerts.map((danger) => (
-                    <li key={danger} className="rounded-md border border-red-400/30 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+                    <li key={danger} className="rounded-md border border-red-400/55 bg-red-100/80 px-3 py-2 text-sm text-red-700 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-200">
                       {danger}
                     </li>
                   ))}
@@ -225,26 +225,26 @@ export function MatchupResult({ data }: MatchupResultProps) {
         </Card>
       </div>
 
-      <Card className="border-cyan-300/20 bg-background/70">
+      <Card className="border-cyan-300/55 bg-background/80 dark:border-cyan-300/20 dark:bg-background/70">
         <CardHeader>
           <CardTitle className="text-base">Plan Tactico por Fases</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {matchup.winCondition ? (
             <p className="text-sm text-foreground/90">
-              <span className="font-medium text-cyan-300">Win condition:</span> {matchup.winCondition}
+              <span className="font-medium text-cyan-700 dark:text-cyan-300">Win condition:</span> {matchup.winCondition}
             </p>
           ) : null}
 
           {matchup.lanePlan ? (
             <p className="rounded-md border border-border/60 bg-card/50 px-3 py-2 text-sm text-foreground/90">
-              <span className="font-medium text-cyan-300">Lane plan:</span> {matchup.lanePlan}
+              <span className="font-medium text-cyan-700 dark:text-cyan-300">Lane plan:</span> {matchup.lanePlan}
             </p>
           ) : null}
 
           <div className="grid gap-4 lg:grid-cols-3">
-            <div className="space-y-2 rounded-xl border border-cyan-300/20 bg-cyan-500/5 p-3">
-              <p className="text-sm font-semibold text-cyan-200">Early Game</p>
+            <div className="space-y-2 rounded-xl border border-cyan-300/55 bg-cyan-500/8 p-3 dark:border-cyan-300/20 dark:bg-cyan-500/5">
+              <p className="text-sm font-semibold text-cyan-700 dark:text-cyan-200">Early Game</p>
               <ul className="space-y-2">
                 {microPlan.earlyGame.map((tip) => (
                   <li key={`early-${tip}`} className="text-sm text-foreground/90">• {tip}</li>
@@ -252,8 +252,8 @@ export function MatchupResult({ data }: MatchupResultProps) {
               </ul>
             </div>
 
-            <div className="space-y-2 rounded-xl border border-violet-300/20 bg-violet-500/5 p-3">
-              <p className="text-sm font-semibold text-violet-200">Mid Game</p>
+            <div className="space-y-2 rounded-xl border border-violet-300/55 bg-violet-500/8 p-3 dark:border-violet-300/20 dark:bg-violet-500/5">
+              <p className="text-sm font-semibold text-violet-700 dark:text-violet-200">Mid Game</p>
               <ul className="space-y-2">
                 {microPlan.midGame.map((tip) => (
                   <li key={`mid-${tip}`} className="text-sm text-foreground/90">• {tip}</li>
@@ -261,8 +261,8 @@ export function MatchupResult({ data }: MatchupResultProps) {
               </ul>
             </div>
 
-            <div className="space-y-2 rounded-xl border border-fuchsia-300/20 bg-fuchsia-500/5 p-3">
-              <p className="text-sm font-semibold text-fuchsia-200">Late Game</p>
+            <div className="space-y-2 rounded-xl border border-fuchsia-300/55 bg-fuchsia-500/8 p-3 dark:border-fuchsia-300/20 dark:bg-fuchsia-500/5">
+              <p className="text-sm font-semibold text-fuchsia-700 dark:text-fuchsia-200">Late Game</p>
               <ul className="space-y-2">
                 {microPlan.lateGame.map((tip) => (
                   <li key={`late-${tip}`} className="text-sm text-foreground/90">• {tip}</li>
