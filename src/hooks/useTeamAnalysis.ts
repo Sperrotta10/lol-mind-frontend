@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
 import type {
+  BuildEntry,
   TeamAnalysisApiResponse,
   TeamAnalysisComposition,
   TeamAnalysisRequest,
@@ -13,16 +14,52 @@ function isRecord(value: unknown): value is UnknownRecord {
   return typeof value === 'object' && value !== null
 }
 
-function toStringArray(value: unknown): string[] | undefined {
+function toNamedString(value: unknown): string | undefined {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value
+  }
+
+  if (isRecord(value) && typeof value.name === 'string' && value.name.trim().length > 0) {
+    return value.name
+  }
+
+  return undefined
+}
+
+function toBuildEntry(value: unknown): BuildEntry | undefined {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value
+  }
+
+  if (!isRecord(value)) {
+    return undefined
+  }
+
+  if (typeof value.name !== 'string' || value.name.trim().length === 0) {
+    return undefined
+  }
+
+  return {
+    id: typeof value.id === 'string' ? value.id : null,
+    name: value.name,
+    image: typeof value.image === 'string' ? value.image : null,
+  }
+}
+
+function toBuildEntryArray(value: unknown): BuildEntry[] | undefined {
   if (Array.isArray(value)) {
-    const parsed = value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+    const parsed = value
+      .map((item) => toBuildEntry(item))
+      .filter((item): item is BuildEntry => item !== undefined)
+
     return parsed.length > 0 ? parsed : undefined
   }
 
   if (isRecord(value)) {
-    const parsed = Object.values(value).filter(
-      (item): item is string => typeof item === 'string' && item.trim().length > 0,
-    )
+    const parsed = Object.values(value)
+      .map((item) => toBuildEntry(item))
+      .filter((item): item is BuildEntry => item !== undefined)
+
     return parsed.length > 0 ? parsed : undefined
   }
 
@@ -30,7 +67,7 @@ function toStringArray(value: unknown): string[] | undefined {
 }
 
 function toOptionalString(value: unknown): string | undefined {
-  return typeof value === 'string' && value.trim().length > 0 ? value : undefined
+  return toNamedString(value)
 }
 
 function normalizeRecommendedBuild(value: unknown): TeamAnalysisRecommendedBuild | undefined {
@@ -38,9 +75,9 @@ function normalizeRecommendedBuild(value: unknown): TeamAnalysisRecommendedBuild
     return undefined
   }
 
-  const coreItems = toStringArray(value.coreItems)
-  const situationalItems = toStringArray(value.situationalItems)
-  const boots = toOptionalString(value.boots)
+  const coreItems = toBuildEntryArray(value.coreItems)
+  const situationalItems = toBuildEntryArray(value.situationalItems)
+  const boots = toBuildEntry(value.boots)
 
   if (!coreItems && !situationalItems && !boots) {
     return undefined

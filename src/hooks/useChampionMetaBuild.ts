@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { ChampionMetaBuildApiResponse, ChampionMetaBuildData } from '@/types/builds'
+import type { BuildEntry, ChampionMetaBuildApiResponse, ChampionMetaBuildData } from '@/types/builds'
 
 interface UseChampionMetaBuildResult {
   data: ChampionMetaBuildData | null
@@ -17,12 +17,59 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }
 
+function asNamedString(value: unknown): string | undefined {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value
+  }
+
+  if (isRecord(value) && typeof value.name === 'string' && value.name.trim().length > 0) {
+    return value.name
+  }
+
+  return undefined
+}
+
+function asBuildEntry(value: unknown): BuildEntry | undefined {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return value
+  }
+
+  if (!isRecord(value)) {
+    return undefined
+  }
+
+  if (typeof value.name !== 'string' || value.name.trim().length === 0) {
+    return undefined
+  }
+
+  return {
+    id: typeof value.id === 'string' ? value.id : null,
+    name: value.name,
+    image: typeof value.image === 'string' ? value.image : null,
+  }
+}
+
 function asStringArray(value: unknown): string[] | undefined {
   if (!Array.isArray(value)) {
     return undefined
   }
 
-  const parsed = value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+  const parsed = value
+    .map((item) => asNamedString(item))
+    .filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+
+  return parsed.length > 0 ? parsed : undefined
+}
+
+function asBuildEntryArray(value: unknown): BuildEntry[] | undefined {
+  if (!Array.isArray(value)) {
+    return undefined
+  }
+
+  const parsed = value
+    .map((item) => asBuildEntry(item))
+    .filter((item): item is BuildEntry => item !== undefined)
+
   return parsed.length > 0 ? parsed : undefined
 }
 
@@ -31,7 +78,7 @@ function asNumber(value: unknown): number | undefined {
 }
 
 function asString(value: unknown): string | undefined {
-  return typeof value === 'string' && value.trim().length > 0 ? value : undefined
+  return asNamedString(value)
 }
 
 function normalizeMetaBuild(raw: unknown): ChampionMetaBuildData | null {
@@ -53,17 +100,17 @@ function normalizeMetaBuild(raw: unknown): ChampionMetaBuildData | null {
     difficulty: asString(raw.difficulty),
     playstyle: asString(raw.playstyle) ?? asString(raw.playstyleExplanation),
     build: {
-      startingItems: asStringArray(buildSource.startingItems),
-      coreItems: asStringArray(buildSource.coreItems),
-      situationalItems: asStringArray(buildSource.situationalItems),
-      optionalItems: asStringArray(buildSource.optionalItems),
-      boots: asString(buildSource.boots),
+      startingItems: asBuildEntryArray(buildSource.startingItems),
+      coreItems: asBuildEntryArray(buildSource.coreItems),
+      situationalItems: asBuildEntryArray(buildSource.situationalItems),
+      optionalItems: asBuildEntryArray(buildSource.optionalItems),
+      boots: asBuildEntry(buildSource.boots),
     },
     runes: {
-      primaryTree: asString(runesSource?.primaryTree),
-      secondaryTree: asString(runesSource?.secondaryTree),
-      primaryChoices: asStringArray(runesSource?.primaryChoices),
-      secondaryChoices: asStringArray(runesSource?.secondaryChoices),
+      primaryTree: asBuildEntry(runesSource?.primaryTree),
+      secondaryTree: asBuildEntry(runesSource?.secondaryTree),
+      primaryChoices: asBuildEntryArray(runesSource?.primaryChoices),
+      secondaryChoices: asBuildEntryArray(runesSource?.secondaryChoices),
       shards: asStringArray(runesSource?.shards),
     },
     skills: {

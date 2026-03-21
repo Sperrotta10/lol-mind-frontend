@@ -34,6 +34,25 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }
 
+function normalizeStylePayload(data: unknown): Record<string, unknown> {
+  if (Array.isArray(data)) {
+    return { items: data }
+  }
+
+  if (!isRecord(data)) {
+    return { result: data }
+  }
+
+  if (!Array.isArray(data.items) && Array.isArray(data.data)) {
+    return {
+      ...data,
+      items: data.data,
+    }
+  }
+
+  return data
+}
+
 export function useStyleBuild(): UseStyleBuildResult {
   const [data, setData] = useState<Record<string, unknown> | null>(null)
   const [usedStyle, setUsedStyle] = useState<string | null>(null)
@@ -82,7 +101,7 @@ export function useStyleBuild(): UseStyleBuildResult {
         return
       }
 
-      const normalized = isRecord(payload.data) ? payload.data : { result: payload.data }
+      const normalized = normalizeStylePayload(payload.data)
       setData(normalized)
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') {
