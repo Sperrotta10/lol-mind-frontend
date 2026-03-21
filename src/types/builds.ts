@@ -3,6 +3,14 @@ export interface MatchupAnalysisRequest {
   enemy: string
 }
 
+export interface BuildEntryAsset {
+  id?: string | null
+  name: string
+  image?: string | null
+}
+
+export type BuildEntry = string | BuildEntryAsset
+
 export interface MatchupDescriptor {
   allyChampion: string
   enemyChampion: string
@@ -12,17 +20,17 @@ export interface MatchupDescriptor {
 }
 
 export interface MatchupBuildRecommendation {
-  startingItems: string[]
-  coreItems: string[]
-  situationalItems: string[]
-  boots: string
+  startingItems: BuildEntry[]
+  coreItems: BuildEntry[]
+  situationalItems: BuildEntry[]
+  boots: BuildEntry | null
 }
 
 export interface MatchupRunesRecommendation {
-  primaryTree: string
-  secondaryTree: string
-  primaryChoices: string[]
-  secondaryChoices: string[]
+  primaryTree: BuildEntry | null
+  secondaryTree: BuildEntry | null
+  primaryChoices: BuildEntry[]
+  secondaryChoices: BuildEntry[]
   shards: string[]
 }
 
@@ -56,9 +64,9 @@ export interface TeamAnalysisRequest {
 }
 
 export interface TeamAnalysisRecommendedBuild {
-  coreItems?: string[]
-  situationalItems?: string[]
-  boots?: string
+  coreItems?: BuildEntry[]
+  situationalItems?: BuildEntry[]
+  boots?: BuildEntry
 }
 
 export interface TeamAnalysisComposition {
@@ -105,18 +113,18 @@ export interface StyleBuildApiResponse {
 }
 
 export interface ChampionMetaBuildItems {
-  startingItems?: string[]
-  coreItems?: string[]
-  situationalItems?: string[]
-  optionalItems?: string[]
-  boots?: string
+  startingItems?: BuildEntry[]
+  coreItems?: BuildEntry[]
+  situationalItems?: BuildEntry[]
+  optionalItems?: BuildEntry[]
+  boots?: BuildEntry
 }
 
 export interface ChampionMetaBuildRunes {
-  primaryTree?: string
-  secondaryTree?: string
-  primaryChoices?: string[]
-  secondaryChoices?: string[]
+  primaryTree?: BuildEntry
+  secondaryTree?: BuildEntry
+  primaryChoices?: BuildEntry[]
+  secondaryChoices?: BuildEntry[]
   shards?: string[]
 }
 
