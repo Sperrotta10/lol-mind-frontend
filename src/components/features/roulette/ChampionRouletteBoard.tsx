@@ -15,6 +15,12 @@ interface ChampionRouletteBoardProps {
   selectedRoleLabel: string
 }
 
+interface StyleEntry {
+  id: string | null
+  name: string
+  image: string | null
+}
+
 const SPIN_DURATION_MS = 3000
 const TICK_MS = 50
 
@@ -23,7 +29,48 @@ function asStringArray(value: unknown): string[] {
     return []
   }
 
-  return value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+  return value
+    .map((item) => {
+      if (typeof item === 'string' && item.trim().length > 0) {
+        return item
+      }
+
+      if (asRecord(item) && typeof item.name === 'string' && item.name.trim().length > 0) {
+        return item.name
+      }
+
+      return null
+    })
+    .filter((item): item is string => typeof item === 'string')
+}
+
+function asStyleEntryArray(value: unknown): StyleEntry[] {
+  if (!Array.isArray(value)) {
+    return []
+  }
+
+  return value
+    .map((item) => {
+      if (typeof item === 'string' && item.trim().length > 0) {
+        return {
+          id: null,
+          name: item,
+          image: null,
+        }
+      }
+
+      const record = asRecord(item)
+      if (!record || typeof record.name !== 'string' || record.name.trim().length === 0) {
+        return null
+      }
+
+      return {
+        id: typeof record.id === 'string' ? record.id : null,
+        name: record.name,
+        image: typeof record.image === 'string' ? record.image : null,
+      }
+    })
+    .filter((item): item is StyleEntry => item !== null)
 }
 
 function collectStringArrays(...values: unknown[]): string[] {
@@ -124,7 +171,8 @@ export function ChampionRouletteBoard({
   const styleRunesRecord = asRecord(styleBuildRecord?.runes)
   const styleSkillsRecord = asRecord(styleBuildRecord?.skills)
 
-  const styleItems = collectStringArrays(
+  const styleItems = asStyleEntryArray(styleBuildRecord?.items)
+  const styleItemNames = collectStringArrays(
     styleBuildRecord?.items,
     styleBuildRecord?.coreItems,
     styleBuildRecord?.situationalItems,
@@ -296,8 +344,17 @@ export function ChampionRouletteBoard({
                           <CardContent>
                             {styleItems.length > 0 ? (
                               <div className="flex flex-wrap gap-2">
-                                {styleItems.map((item) => (
-                                  <Badge key={`style-item-${item}`} variant="outline" className="border-cyan-300/45 bg-cyan-500/10 text-cyan-100">
+                                {styleItems.map((item, index) => (
+                                  <Badge key={`style-item-${item.id ?? item.name}-${index}`} variant="outline" className="border-cyan-300/45 bg-cyan-500/10 text-cyan-100">
+                                    {item.image ? <img src={item.image} alt={item.name} className="size-4 rounded-sm" loading="lazy" /> : null}
+                                    {item.name}
+                                  </Badge>
+                                ))}
+                              </div>
+                            ) : styleItemNames.length > 0 ? (
+                              <div className="flex flex-wrap gap-2">
+                                {styleItemNames.map((item) => (
+                                  <Badge key={`style-item-fallback-${item}`} variant="outline" className="border-cyan-300/45 bg-cyan-500/10 text-cyan-100">
                                     {item}
                                   </Badge>
                                 ))}
@@ -354,7 +411,7 @@ export function ChampionRouletteBoard({
                         </div>
                       ) : null}
 
-                      {!styleSummary && !playstyleExplanation && styleItems.length === 0 && styleRunes.length === 0 && styleTips.length === 0 ? (
+                      {!styleSummary && !playstyleExplanation && styleItems.length === 0 && styleItemNames.length === 0 && styleRunes.length === 0 && styleTips.length === 0 ? (
                         <p className="rounded-md border border-slate-300/80 bg-white/75 px-3 py-2 text-sm text-slate-600 dark:border-zinc-700/70 dark:bg-zinc-900/80 dark:text-zinc-300">
                           La build exotica se genero, pero el backend no devolvio un formato visual estandar.
                         </p>

@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import type { MatchupAnalysisResponse } from '@/types/builds'
+import type { BuildEntry, MatchupAnalysisResponse } from '@/types/builds'
 
 interface MatchupResultProps {
   data: MatchupAnalysisResponse
@@ -54,6 +54,22 @@ function computePhaseRisk(
   const planStabilityBonus = Math.min(15, phaseTips.length * 4)
 
   return clamp(35 + phaseAlertHits * 20 + globalAlertPressure - planStabilityBonus, 5, 95)
+}
+
+function getEntryName(entry: BuildEntry): string {
+  return typeof entry === 'string' ? entry : entry.name
+}
+
+function getEntryImage(entry: BuildEntry): string | null {
+  return typeof entry === 'string' ? null : entry.image ?? null
+}
+
+function getEntryKey(entry: BuildEntry, prefix: string, index: number): string {
+  if (typeof entry === 'string') {
+    return `${prefix}-${entry}`
+  }
+
+  return `${prefix}-${entry.id ?? entry.name}-${index}`
 }
 
 export function MatchupResult({ data }: MatchupResultProps) {
@@ -110,9 +126,10 @@ export function MatchupResult({ data }: MatchupResultProps) {
               <p className="text-sm font-medium text-cyan-700 dark:text-cyan-200">Inicio</p>
               {build.startingItems.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
-                  {build.startingItems.map((item) => (
-                    <Badge key={`start-${item}`} variant="outline" className="border-cyan-300/55 bg-cyan-500/10 text-cyan-700 dark:border-cyan-300/40 dark:text-cyan-200">
-                      {item}
+                  {build.startingItems.map((item, index) => (
+                    <Badge key={getEntryKey(item, 'start', index)} variant="outline" className="border-cyan-300/55 bg-cyan-500/10 text-cyan-700 dark:border-cyan-300/40 dark:text-cyan-200">
+                      {getEntryImage(item) ? <img src={getEntryImage(item) ?? ''} alt={getEntryName(item)} className="size-4 rounded-sm" loading="lazy" /> : null}
+                      {getEntryName(item)}
                     </Badge>
                   ))}
                 </div>
@@ -124,9 +141,10 @@ export function MatchupResult({ data }: MatchupResultProps) {
             <div className="space-y-2">
               <p className="text-sm font-medium text-cyan-700 dark:text-cyan-200">Core</p>
               <div className="flex flex-wrap gap-2">
-                {build.coreItems.map((item) => (
-                  <Badge key={`core-${item}`} variant="outline" className="border-sky-300/55 bg-sky-500/10 text-sky-700 dark:border-sky-300/40 dark:text-sky-200">
-                    {item}
+                {build.coreItems.map((item, index) => (
+                  <Badge key={getEntryKey(item, 'core', index)} variant="outline" className="border-sky-300/55 bg-sky-500/10 text-sky-700 dark:border-sky-300/40 dark:text-sky-200">
+                    {getEntryImage(item) ? <img src={getEntryImage(item) ?? ''} alt={getEntryName(item)} className="size-4 rounded-sm" loading="lazy" /> : null}
+                    {getEntryName(item)}
                   </Badge>
                 ))}
               </div>
@@ -136,8 +154,11 @@ export function MatchupResult({ data }: MatchupResultProps) {
               <div className="space-y-2">
                 <p className="text-sm font-medium text-cyan-700 dark:text-cyan-200">Situacionales</p>
                 <div className="flex flex-wrap gap-2">
-                  {build.situationalItems.map((item) => (
-                    <Badge key={`situ-${item}`} variant="secondary">{item}</Badge>
+                  {build.situationalItems.map((item, index) => (
+                    <Badge key={getEntryKey(item, 'situ', index)} variant="secondary">
+                      {getEntryImage(item) ? <img src={getEntryImage(item) ?? ''} alt={getEntryName(item)} className="size-4 rounded-sm" loading="lazy" /> : null}
+                      {getEntryName(item)}
+                    </Badge>
                   ))}
                 </div>
               </div>
@@ -145,7 +166,7 @@ export function MatchupResult({ data }: MatchupResultProps) {
 
             {build.boots ? (
               <p className="text-sm text-foreground/90">
-                <span className="font-medium text-cyan-700 dark:text-cyan-300">Botas:</span> {build.boots}
+                <span className="font-medium text-cyan-700 dark:text-cyan-300">Botas:</span> {getEntryName(build.boots)}
               </p>
             ) : null}
           </CardContent>
@@ -157,11 +178,14 @@ export function MatchupResult({ data }: MatchupResultProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <p className="text-sm font-medium text-foreground">Arbol primario: {runes.primaryTree}</p>
+              <p className="text-sm font-medium text-foreground">Arbol primario: {runes.primaryTree ? getEntryName(runes.primaryTree) : 'N/A'}</p>
               {runes.primaryChoices.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
-                  {runes.primaryChoices.map((rune) => (
-                    <Badge key={`primary-${rune}`} variant="outline" className="border-fuchsia-300/55 bg-fuchsia-500/10 text-fuchsia-700 dark:border-fuchsia-300/40 dark:text-fuchsia-200">{rune}</Badge>
+                  {runes.primaryChoices.map((rune, index) => (
+                    <Badge key={getEntryKey(rune, 'primary-rune', index)} variant="outline" className="border-fuchsia-300/55 bg-fuchsia-500/10 text-fuchsia-700 dark:border-fuchsia-300/40 dark:text-fuchsia-200">
+                      {getEntryImage(rune) ? <img src={getEntryImage(rune) ?? ''} alt={getEntryName(rune)} className="size-4 rounded-sm" loading="lazy" /> : null}
+                      {getEntryName(rune)}
+                    </Badge>
                   ))}
                 </div>
               ) : (
@@ -170,10 +194,13 @@ export function MatchupResult({ data }: MatchupResultProps) {
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium text-foreground">Arbol secundario: {runes.secondaryTree}</p>
+              <p className="text-sm font-medium text-foreground">Arbol secundario: {runes.secondaryTree ? getEntryName(runes.secondaryTree) : 'N/A'}</p>
               <div className="flex flex-wrap gap-2">
-                {runes.secondaryChoices.map((rune) => (
-                  <Badge key={`secondary-${rune}`} variant="secondary">{rune}</Badge>
+                {runes.secondaryChoices.map((rune, index) => (
+                  <Badge key={getEntryKey(rune, 'secondary-rune', index)} variant="secondary">
+                    {getEntryImage(rune) ? <img src={getEntryImage(rune) ?? ''} alt={getEntryName(rune)} className="size-4 rounded-sm" loading="lazy" /> : null}
+                    {getEntryName(rune)}
+                  </Badge>
                 ))}
               </div>
             </div>

@@ -1,11 +1,19 @@
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import type { TeamAnalysisResponseData } from '@/types/builds'
+import type { BuildEntry, TeamAnalysisResponseData } from '@/types/builds'
 import { useState } from 'react'
 
 interface TeamAnalysisResultProps {
   data: TeamAnalysisResponseData
+}
+
+function getEntryName(entry: BuildEntry): string {
+  return typeof entry === 'string' ? entry : entry.name
+}
+
+function getEntryImage(entry: BuildEntry): string | null {
+  return typeof entry === 'string' ? null : entry.image ?? null
 }
 
 export function TeamAnalysisResult({ data }: TeamAnalysisResultProps) {
@@ -53,9 +61,10 @@ export function TeamAnalysisResult({ data }: TeamAnalysisResultProps) {
                   <p className="text-sm font-medium text-cyan-700 dark:text-cyan-200">Core</p>
                   {recommendedBuild?.coreItems?.length ? (
                     <div className="flex flex-wrap gap-2">
-                      {recommendedBuild.coreItems.map((item) => (
-                        <Badge key={`core-${item}`} variant="outline" className="border-sky-300/55 bg-sky-500/10 text-sky-700 dark:border-sky-300/40 dark:text-sky-200">
-                          {item}
+                      {recommendedBuild.coreItems.map((item, index) => (
+                        <Badge key={`core-${getEntryName(item)}-${index}`} variant="outline" className="border-sky-300/55 bg-sky-500/10 text-sky-700 dark:border-sky-300/40 dark:text-sky-200">
+                          {getEntryImage(item) ? <img src={getEntryImage(item) ?? ''} alt={getEntryName(item)} className="size-4 rounded-sm" loading="lazy" /> : null}
+                          {getEntryName(item)}
                         </Badge>
                       ))}
                     </div>
@@ -68,8 +77,11 @@ export function TeamAnalysisResult({ data }: TeamAnalysisResultProps) {
                   <p className="text-sm font-medium text-cyan-700 dark:text-cyan-200">Situacionales</p>
                   {recommendedBuild?.situationalItems?.length ? (
                     <div className="flex flex-wrap gap-2">
-                      {recommendedBuild.situationalItems.map((item) => (
-                        <Badge key={`situ-${item}`} variant="secondary">{item}</Badge>
+                      {recommendedBuild.situationalItems.map((item, index) => (
+                        <Badge key={`situ-${getEntryName(item)}-${index}`} variant="secondary">
+                          {getEntryImage(item) ? <img src={getEntryImage(item) ?? ''} alt={getEntryName(item)} className="size-4 rounded-sm" loading="lazy" /> : null}
+                          {getEntryName(item)}
+                        </Badge>
                       ))}
                     </div>
                   ) : (
@@ -79,7 +91,7 @@ export function TeamAnalysisResult({ data }: TeamAnalysisResultProps) {
 
                 {recommendedBuild?.boots ? (
                   <p className="text-sm text-foreground/90">
-                    <span className="font-medium text-cyan-700 dark:text-cyan-300">Botas:</span> {recommendedBuild.boots}
+                    <span className="font-medium text-cyan-700 dark:text-cyan-300">Botas:</span> {getEntryName(recommendedBuild.boots)}
                   </p>
                 ) : (
                   <p className="text-sm text-muted-foreground">Sin recomendacion de botas.</p>

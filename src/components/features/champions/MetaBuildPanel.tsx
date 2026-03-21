@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { ChampionMetaBuildData } from '@/types/builds'
+import type { BuildEntry, ChampionMetaBuildData } from '@/types/builds'
 import { AlertTriangle, RefreshCcw, Sparkles } from 'lucide-react'
 
 interface MetaBuildPanelProps {
@@ -12,16 +12,25 @@ interface MetaBuildPanelProps {
   onRetry?: () => void
 }
 
-function renderBadges(items: string[] | undefined, prefix: string) {
+function getEntryName(entry: BuildEntry): string {
+  return typeof entry === 'string' ? entry : entry.name
+}
+
+function getEntryImage(entry: BuildEntry): string | null {
+  return typeof entry === 'string' ? null : entry.image ?? null
+}
+
+function renderBadges(items: BuildEntry[] | undefined, prefix: string) {
   if (!items || items.length === 0) {
     return <p className="text-sm text-slate-500 dark:text-zinc-400">Sin datos disponibles.</p>
   }
 
   return (
     <div className="flex flex-wrap gap-2">
-      {items.map((item) => (
-        <Badge key={`${prefix}-${item}`} variant="outline" className="border-cyan-400/55 bg-cyan-500/10 text-cyan-800 dark:border-cyan-300/45 dark:text-cyan-100">
-          {item}
+      {items.map((item, index) => (
+        <Badge key={`${prefix}-${getEntryName(item)}-${index}`} variant="outline" className="border-cyan-400/55 bg-cyan-500/10 text-cyan-800 dark:border-cyan-300/45 dark:text-cyan-100">
+          {getEntryImage(item) ? <img src={getEntryImage(item) ?? ''} alt={getEntryName(item)} className="size-4 rounded-sm" loading="lazy" /> : null}
+          {getEntryName(item)}
         </Badge>
       ))}
     </div>
@@ -147,7 +156,7 @@ export function MetaBuildPanel({ data, isLoading, isError, onRetry }: MetaBuildP
               <CardTitle className="text-sm text-slate-800 dark:text-zinc-100">Runas Principales</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {data.runes?.primaryTree ? <p className="text-xs uppercase tracking-[0.16em] text-cyan-700 dark:text-cyan-300">{data.runes.primaryTree}</p> : null}
+              {data.runes?.primaryTree ? <p className="text-xs uppercase tracking-[0.16em] text-cyan-700 dark:text-cyan-300">{getEntryName(data.runes.primaryTree)}</p> : null}
               {renderBadges(data.runes?.primaryChoices, 'runes-primary')}
             </CardContent>
           </Card>
@@ -157,7 +166,7 @@ export function MetaBuildPanel({ data, isLoading, isError, onRetry }: MetaBuildP
               <CardTitle className="text-sm text-slate-800 dark:text-zinc-100">Runas Secundarias</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {data.runes?.secondaryTree ? <p className="text-xs uppercase tracking-[0.16em] text-cyan-700 dark:text-cyan-300">{data.runes.secondaryTree}</p> : null}
+              {data.runes?.secondaryTree ? <p className="text-xs uppercase tracking-[0.16em] text-cyan-700 dark:text-cyan-300">{getEntryName(data.runes.secondaryTree)}</p> : null}
               {renderBadges(data.runes?.secondaryChoices, 'runes-secondary')}
             </CardContent>
           </Card>
