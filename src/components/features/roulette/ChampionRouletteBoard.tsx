@@ -21,8 +21,8 @@ interface StyleEntry {
   image: string | null
 }
 
-const SPIN_DURATION_MS = 3000
-const TICK_MS = 50
+const SPIN_DURATION_MS = 5000
+const TICK_MS = 320
 
 function asStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) {
@@ -71,6 +71,59 @@ function asStyleEntryArray(value: unknown): StyleEntry[] {
       }
     })
     .filter((item): item is StyleEntry => item !== null)
+}
+
+function asStyleEntry(value: unknown): StyleEntry | null {
+  if (typeof value === 'string' && value.trim().length > 0) {
+    return {
+      id: null,
+      name: value,
+      image: null,
+    }
+  }
+
+  const record = asRecord(value)
+  if (!record || typeof record.name !== 'string' || record.name.trim().length === 0) {
+    return null
+  }
+
+  return {
+    id: typeof record.id === 'string' ? record.id : null,
+    name: record.name,
+    image: typeof record.image === 'string' ? record.image : null,
+  }
+}
+
+function collectStyleEntries(...values: unknown[]): StyleEntry[] {
+  const map = new Map<string, StyleEntry>()
+
+  values.forEach((value) => {
+    const entries = Array.isArray(value)
+      ? asStyleEntryArray(value)
+      : (() => {
+          const singleEntry = asStyleEntry(value)
+          return singleEntry ? [singleEntry] : []
+        })()
+
+    entries.forEach((entry) => {
+      const key = entry.id ? `id:${entry.id}` : `name:${entry.name.toLowerCase()}`
+      const existing = map.get(key)
+
+      if (!existing) {
+        map.set(key, entry)
+        return
+      }
+
+      if (!existing.image && entry.image) {
+        map.set(key, {
+          ...existing,
+          image: entry.image,
+        })
+      }
+    })
+  })
+
+  return Array.from(map.values())
 }
 
 function collectStringArrays(...values: unknown[]): string[] {
@@ -171,7 +224,13 @@ export function ChampionRouletteBoard({
   const styleRunesRecord = asRecord(styleBuildRecord?.runes)
   const styleSkillsRecord = asRecord(styleBuildRecord?.skills)
 
-  const styleItems = asStyleEntryArray(styleBuildRecord?.items)
+  const styleItems = collectStyleEntries(
+    styleBuildRecord?.items,
+    styleBuildRecord?.coreItems,
+    styleBuildRecord?.situationalItems,
+    styleBuildNestedRecord?.coreItems,
+    styleBuildNestedRecord?.situationalItems,
+  )
   const styleItemNames = collectStringArrays(
     styleBuildRecord?.items,
     styleBuildRecord?.coreItems,
@@ -179,11 +238,26 @@ export function ChampionRouletteBoard({
     styleBuildNestedRecord?.coreItems,
     styleBuildNestedRecord?.situationalItems,
   )
+  const styleRuneEntries = collectStyleEntries(
+    styleBuildRecord?.runes,
+    styleRunesRecord?.primaryTree,
+    styleRunesRecord?.secondaryTree,
+    styleRunesRecord?.primaryChoices,
+    styleRunesRecord?.secondaryChoices,
+  )
   const styleRunes = collectStringArrays(
     styleBuildRecord?.runes,
+    styleRunesRecord?.primaryTree,
+    styleRunesRecord?.secondaryTree,
     styleRunesRecord?.primaryChoices,
     styleRunesRecord?.secondaryChoices,
     styleRunesRecord?.shards,
+  )
+  const styleItemFallbackNames = styleItemNames.filter(
+    (name) => !styleItems.some((entry) => entry.name.toLowerCase() === name.toLowerCase()),
+  )
+  const styleRuneFallbackNames = styleRunes.filter(
+    (name) => !styleRuneEntries.some((entry) => entry.name.toLowerCase() === name.toLowerCase()),
   )
   const styleTips = asStringArray(styleBuildRecord?.tips)
   const styleSkills = collectStringArrays(
@@ -351,9 +425,9 @@ export function ChampionRouletteBoard({
                                   </Badge>
                                 ))}
                               </div>
-                            ) : styleItemNames.length > 0 ? (
+                            ) : styleItemFallbackNames.length > 0 ? (
                               <div className="flex flex-wrap gap-2">
-                                {styleItemNames.map((item) => (
+                                {styleItemFallbackNames.map((item) => (
                                   <Badge key={`style-item-fallback-${item}`} variant="outline" className="border-cyan-300/45 bg-cyan-500/10 text-cyan-100">
                                     {item}
                                   </Badge>
@@ -370,10 +444,19 @@ export function ChampionRouletteBoard({
                             <CardTitle className="text-sm text-slate-800 dark:text-zinc-100">Runas / enfoque</CardTitle>
                           </CardHeader>
                           <CardContent>
-                            {styleRunes.length > 0 ? (
+                            {styleRuneEntries.length > 0 ? (
                               <div className="flex flex-wrap gap-2">
-                                {styleRunes.map((rune) => (
-                                  <Badge key={`style-rune-${rune}`} variant="secondary">
+                                {styleRuneEntries.map((rune, index) => (
+                                  <Badge key={`style-rune-${rune.id ?? rune.name}-${index}`} variant="secondary">
+                                    {rune.image ? <img src={rune.image} alt={rune.name} className="size-4 rounded-sm" loading="lazy" /> : null}
+                                    {rune.name}
+                                  </Badge>
+                                ))}
+                              </div>
+                            ) : styleRuneFallbackNames.length > 0 ? (
+                              <div className="flex flex-wrap gap-2">
+                                {styleRuneFallbackNames.map((rune) => (
+                                  <Badge key={`style-rune-fallback-${rune}`} variant="secondary">
                                     {rune}
                                   </Badge>
                                 ))}
@@ -411,7 +494,7 @@ export function ChampionRouletteBoard({
                         </div>
                       ) : null}
 
-                      {!styleSummary && !playstyleExplanation && styleItems.length === 0 && styleItemNames.length === 0 && styleRunes.length === 0 && styleTips.length === 0 ? (
+                      {!styleSummary && !playstyleExplanation && styleItems.length === 0 && styleItemFallbackNames.length === 0 && styleRuneEntries.length === 0 && styleRuneFallbackNames.length === 0 && styleTips.length === 0 ? (
                         <p className="rounded-md border border-slate-300/80 bg-white/75 px-3 py-2 text-sm text-slate-600 dark:border-zinc-700/70 dark:bg-zinc-900/80 dark:text-zinc-300">
                           La build exotica se genero, pero el backend no devolvio un formato visual estandar.
                         </p>
